@@ -17,15 +17,15 @@ CARBON_FACTORS = {
         'omnivore_high': 6.5,
     },
     'energy': {
-        'renewable': 0.5,
-        'mixed': 2.5,
-        'fossil': 5.0,
+        'renewable': 0.05,
+        'mixed': 0.25,
+        'fossil': 0.5,
     },
     'consumption': {
-        'minimalist': 1.0,
-        'moderate': 2.5,
-        'high': 4.5,
-        'excessive': 7.0,
+        'minimalist': 0.1,
+        'moderate': 0.25,
+        'high': 0.5,
+        'excessive': 0.8,
     },
 }
 
@@ -59,10 +59,10 @@ def validate_inputs(data):
 
 
 def calculate_carbon_footprint(transport_type, transport_distance, diet, energy, consumption):
-    transport_factor = CARBON_FACTORS['transport'][transport_type]
-    diet_factor = CARBON_FACTORS['diet'][diet]
-    energy_factor = CARBON_FACTORS['energy'][energy]
-    consumption_factor = CARBON_FACTORS['consumption'][consumption]
+    transport_factor = CARBON_FACTORS['transport'].get(transport_type, 0)
+    diet_factor = CARBON_FACTORS['diet'].get(diet, 0)
+    energy_factor = CARBON_FACTORS['energy'].get(energy, 0)
+    consumption_factor = CARBON_FACTORS['consumption'].get(consumption, 0)
 
     transport_emissions = transport_factor * transport_distance * 52 / 1000
     diet_emissions = diet_factor * 365 / 1000
@@ -78,7 +78,9 @@ def calculate_carbon_footprint(transport_type, transport_distance, diet, energy,
         'consumption': round(consumption_emissions, 2),
     }
 
-    return {'total': total, 'breakdown': breakdown}
+    category = get_category(total)
+
+    return {'total': total, 'breakdown': breakdown, 'category': category}
 
 
 def get_category(total):

@@ -6,7 +6,7 @@
 
   if (navToggle && navLinks) {
     navToggle.addEventListener('click', function () {
-      var expanded = navToggle.getAttribute('aria-expanded') === 'true' ? false : true;
+      var expanded = navToggle.getAttribute('aria-expanded') !== 'true';
       navToggle.setAttribute('aria-expanded', expanded);
       navLinks.classList.toggle('active');
     });
@@ -27,7 +27,7 @@
     });
   }
 
-  var form = document.querySelector('form[novalidate]');
+  var form = document.getElementById('footprint-form');
   if (form) {
     form.addEventListener('submit', function (e) {
       var requiredFields = form.querySelectorAll('[required]');
@@ -35,7 +35,7 @@
       var firstInvalid = null;
 
       requiredFields.forEach(function (field) {
-        if (!field.value || field.value === '') {
+        if (!field.value) {
           field.style.borderColor = '#d32f2f';
           valid = false;
           if (!firstInvalid) firstInvalid = field;

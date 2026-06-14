@@ -39,6 +39,19 @@ class TestGetPersonalizedTips:
         values = [t['value'] for t in tips]
         assert values == sorted(values, reverse=True)
 
+    def test_empty_breakdown(self):
+        tips = get_personalized_tips({})
+        assert tips == []
+
+    def test_all_zero_breakdown(self):
+        tips = get_personalized_tips({'transport': 0, 'diet': 0, 'energy': 0, 'consumption': 0})
+        assert tips == []
+
+    def test_returns_max_3_suggestions_per_category(self):
+        breakdown = {'transport': 5.0}
+        tips = get_personalized_tips(breakdown)
+        assert len(tips[0]['suggestions']) <= 3
+
 
 class TestGetGlobalComparison:
     def test_significantly_below(self):
@@ -66,6 +79,14 @@ class TestGetGlobalComparison:
         assert 'message' in result
         assert len(result['message']) > 0
 
+    def test_zero_total(self):
+        result = get_global_comparison(0)
+        assert result['comparison'] == 'significantly_below'
+
+    def test_negative_total(self):
+        result = get_global_comparison(-5)
+        assert result['comparison'] == 'significantly_below'
+
 
 class TestEstimateForestOffset:
     def test_returns_dict(self):
@@ -77,6 +98,16 @@ class TestEstimateForestOffset:
         result = estimate_forest_offset(10.0)
         assert result['trees'] == 50
         assert result['hectares'] == 0.2
+
+    def test_zero_total(self):
+        result = estimate_forest_offset(0)
+        assert result['trees'] == 0
+        assert result['hectares'] == 0.0
+
+    def test_negative_total(self):
+        result = estimate_forest_offset(-5)
+        assert result['trees'] == -25
+        assert result['hectares'] == -0.1
 
 
 class TestConstants:

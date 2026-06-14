@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, jsonify
-from app.calculator import validate_inputs, calculate_carbon_footprint, get_category
-from app.insights import get_personalized_tips, get_global_comparison, estimate_forest_offset, CATEGORY_MESSAGES
+from app.calculator import validate_inputs, calculate_carbon_footprint
+from app.insights import get_personalized_tips, get_global_comparison, estimate_forest_offset, CATEGORY_MESSAGES, TIPS
 from app.models import FootprintRecord
 
 bp = Blueprint('main', __name__)
@@ -31,21 +31,19 @@ def calculate():
     consumption = data.get('consumption', '').strip().lower()
 
     result = calculate_carbon_footprint(transport_type, transport_distance, diet, energy, consumption)
-    category = get_category(result['total'])
-    result['category'] = category
 
-    record = FootprintRecord(data, result)
+    record = FootprintRecord(data, result, transport_distance)
     FootprintRecord.save(record)
 
     tips = get_personalized_tips(result['breakdown'])
     comparison = get_global_comparison(result['total'])
     offset = estimate_forest_offset(result['total'])
-    message = CATEGORY_MESSAGES.get(category, '')
+    message = CATEGORY_MESSAGES.get(result['category'], '')
 
     return render_template(
         'results.html',
         result=result,
-        category=category,
+        category=result['category'],
         tips=tips,
         comparison=comparison,
         offset=offset,
@@ -68,8 +66,6 @@ def api_calculate():
     consumption = data.get('consumption', '').strip().lower()
 
     result = calculate_carbon_footprint(transport_type, transport_distance, diet, energy, consumption)
-    category = get_category(result['total'])
-    result['category'] = category
 
     tips = get_personalized_tips(result['breakdown'])
     comparison = get_global_comparison(result['total'])
@@ -78,7 +74,7 @@ def api_calculate():
     return jsonify({
         'success': True,
         'result': result,
-        'category': category,
+        'category': result['category'],
         'tips': tips,
         'comparison': comparison,
         'offset': offset,
@@ -87,7 +83,6 @@ def api_calculate():
 
 @bp.route('/tips')
 def tips():
-    from app.insights import TIPS
     return render_template('tips.html', tips=TIPS)
 
 

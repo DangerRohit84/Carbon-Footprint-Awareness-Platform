@@ -1,12 +1,14 @@
 from datetime import datetime
 
+MAX_RECORDS = 100
+
 
 class FootprintRecord:
     _records = []
 
-    def __init__(self, data, result):
+    def __init__(self, data, result, transport_distance):
         self.transport_type = data.get('transport_type')
-        self.transport_distance = float(data.get('transport_distance', 0))
+        self.transport_distance = transport_distance
         self.diet = data.get('diet')
         self.energy = data.get('energy')
         self.consumption = data.get('consumption')
@@ -31,6 +33,8 @@ class FootprintRecord:
     @classmethod
     def save(cls, record):
         cls._records.append(record)
+        if len(cls._records) > MAX_RECORDS:
+            cls._records = cls._records[-MAX_RECORDS:]
 
     @classmethod
     def get_all(cls):

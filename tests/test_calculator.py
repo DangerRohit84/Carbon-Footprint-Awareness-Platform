@@ -52,6 +52,28 @@ class TestValidateInputs:
         errors = validate_inputs(data)
         assert any('Transport distance' in e for e in errors)
 
+    def test_zero_distance_boundary(self):
+        data = {
+            'transport_type': 'car',
+            'transport_distance': '0',
+            'diet': 'vegan',
+            'energy': 'renewable',
+            'consumption': 'minimalist',
+        }
+        errors = validate_inputs(data)
+        assert errors == []
+
+    def test_max_distance_boundary(self):
+        data = {
+            'transport_type': 'car',
+            'transport_distance': '1000',
+            'diet': 'vegan',
+            'energy': 'renewable',
+            'consumption': 'minimalist',
+        }
+        errors = validate_inputs(data)
+        assert errors == []
+
     def test_invalid_diet(self):
         data = {
             'transport_type': 'walk',
@@ -96,6 +118,27 @@ class TestValidateInputs:
         errors = validate_inputs(data)
         assert any('valid number' in e for e in errors)
 
+    def test_missing_transport_distance_key(self):
+        data = {
+            'transport_type': 'car',
+            'diet': 'vegan',
+            'energy': 'renewable',
+            'consumption': 'minimalist',
+        }
+        errors = validate_inputs(data)
+        assert errors == []
+
+    def test_upper_case_inputs(self):
+        data = {
+            'transport_type': 'CAR',
+            'transport_distance': '50',
+            'diet': 'VEGAN',
+            'energy': 'RENEWABLE',
+            'consumption': 'MINIMALIST',
+        }
+        errors = validate_inputs(data)
+        assert errors == []
+
 
 class TestCalculateCarbonFootprint:
     def test_minimal_footprint(self):
@@ -136,6 +179,20 @@ class TestCalculateCarbonFootprint:
         )
         assert result['total'] == expected
 
+    def test_returns_category(self):
+        result = calculate_carbon_footprint('walk', 0, 'vegan', 'renewable', 'minimalist')
+        assert 'category' in result
+        assert result['category'] in ('excellent', 'good', 'average', 'above_average', 'high')
+
+    def test_zero_total_is_excellent(self):
+        result = calculate_carbon_footprint('walk', 0, 'vegan', 'renewable', 'minimalist')
+        assert result['category'] == 'excellent'
+
+    def test_safe_with_invalid_keys(self):
+        result = calculate_carbon_footprint('unknown', 0, 'unknown', 'unknown', 'unknown')
+        assert result['total'] == 0
+        assert 'category' in result
+
 
 class TestGetCategory:
     def test_excellent(self):
@@ -156,3 +213,9 @@ class TestGetCategory:
     def test_boundary_excellent_good(self):
         assert get_category(2.5) == 'excellent'
         assert get_category(2.51) == 'good'
+
+    def test_zero_total(self):
+        assert get_category(0) == 'excellent'
+
+    def test_negative_total(self):
+        assert get_category(-1) == 'excellent'
