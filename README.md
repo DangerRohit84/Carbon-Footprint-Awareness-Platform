@@ -42,12 +42,16 @@ The platform uses a **factor-based carbon estimation model**:
 - The platform uses in-memory storage (session-scoped); a database would be needed for persistence across sessions
 - Offsetting estimates (trees/hectares) are approximations
 
+## Live Demo
+
+**Deployed on Google Cloud Run:** [https://eco-track-627388336412.us-central1.run.app](https://eco-track-627388336412.us-central1.run.app)
+
 ## Tech Stack
 
 - **Backend:** Python Flask
 - **Frontend:** HTML, CSS, JavaScript (vanilla, no frameworks)
 - **Testing:** pytest
-- **Deployment:** gunicorn (production-ready)
+- **Deployment:** gunicorn + Google Cloud Run (containerized via Docker)
 
 ## Setup
 
@@ -65,16 +69,19 @@ pip install -r requirements.txt
 python run.py
 ```
 
-## Testing
+## Deployment
+
+The app is containerized via Docker and deployed on Google Cloud Run.
 
 ```bash
-pytest tests/ -v
+# Build and deploy
+gcloud run deploy eco-track --source . --platform managed --region us-central1 --allow-unauthenticated
 ```
 
 ## API
 
 ```bash
-curl -X POST https://yourdomain.com/api/calculate \
+curl -X POST https://eco-track-627388336412.us-central1.run.app/api/calculate \
   -H "Content-Type: application/json" \
   -d '{
     "transport_type": "car",
