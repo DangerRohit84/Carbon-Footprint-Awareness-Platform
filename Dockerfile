@@ -5,7 +5,7 @@ FROM python:3.10-slim
 WORKDIR /app
 
 # Install dependencies first (layering: rarely-changed layer caches well).
-COPY requirements.txt .
+COPY requirements*.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the full application source after dependencies to leverage Docker cache.

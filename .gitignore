@@ -17,3 +17,6 @@ venv/
 
 # Flask instance folder (contains runtime data)
 .instance/
+
+# Runtime data directory (persisted JSON records)
+data/

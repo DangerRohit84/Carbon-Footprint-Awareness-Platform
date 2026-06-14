@@ -1,36 +1,26 @@
 <!DOCTYPE html>
-<!--
-  EcoTrack base template.
-  Provides the shared layout: skip link, header nav, main content slot, and footer.
-  All pages extend this template for consistent structure and accessibility.
--->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Carbon Footprint Awareness Platform - Track and reduce your carbon footprint">
     <title>{% block title %}EcoTrack{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <!-- Preconnect to Google Fonts for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <!-- Skip-to-content link: first focusable element for keyboard users (WCAG 2.4.1) -->
     <a href="#main-content" class="skip-link">Skip to main content</a>
 
-    <!-- Sticky site header with responsive navigation -->
     <header class="site-header" role="banner">
         <nav class="nav-container" role="navigation" aria-label="Main navigation">
             <a href="{{ url_for('main.index') }}" class="logo" aria-label="EcoTrack Home">
                 <span aria-hidden="true">&#127807;</span> EcoTrack
             </a>
-            <!-- Hamburger button: visible only on mobile via CSS -->
             <button class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false" id="nav-toggle">
                 <span class="hamburger"></span>
             </button>
-            <!-- Using plain <ul>/<li>/<a> for correct nav semantics (no ARIA menubar) -->
             <ul class="nav-links" id="nav-links">
                 <li><a href="{{ url_for('main.index') }}">Home</a></li>
                 <li><a href="{{ url_for('main.calculator') }}">Calculator</a></li>
@@ -40,7 +30,6 @@
         </nav>
     </header>
 
-    <!-- Main content area identified by skip-link target -->
     <main id="main-content" role="main">
         {% block content %}{% endblock %}
     </main>

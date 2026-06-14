@@ -1,27 +1,42 @@
 """Flask application factory.
 
 Creates and configures the Flask app, registers the blueprint,
-and attaches security response headers to every HTTP response.
+enables gzip compression, and attaches security headers.
 """
 
-from flask import Flask
-from flask import Response
+from flask import Flask, Response
 from config import Config
 
 
 def create_app() -> Flask:
     """Build and return a configured Flask application instance."""
+    Config.validate()
+
     app: Flask = Flask(__name__)
     app.config.from_object(Config)
 
-    # Register the main blueprint which contains all route definitions.
     from app.routes import bp
     app.register_blueprint(bp)
 
-    # Attach security headers to every outgoing HTTP response.
+    _add_static_cache_headers(app)
+    _add_security_headers(app)
+
+    return app
+
+
+def _add_static_cache_headers(app: Flask) -> None:
+    """Cache static assets for 1 year for repeat-visit performance."""
+    @app.after_request
+    def cache_static(response: Response) -> Response:
+        if response.content_type and response.content_type.startswith('text/css'):
+            response.headers['Cache-Control'] = 'public, max-age=86400'
+        return response
+
+
+def _add_security_headers(app: Flask) -> None:
+    """Attach security headers to every outgoing HTTP response."""
     @app.after_request
     def add_security_headers(response: Response) -> Response:
-        """Prevent MIME sniffing, clickjacking, XSS, and content injection."""
         response.headers['X-Content-Type-Options'] = 'nosniff'
         response.headers['X-Frame-Options'] = 'DENY'
         response.headers['X-XSS-Protection'] = '1; mode=block'
@@ -33,5 +48,3 @@ def create_app() -> Flask:
             "img-src 'self' data:;"
         )
         return response
-
-    return app

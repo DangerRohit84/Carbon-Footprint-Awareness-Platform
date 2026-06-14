@@ -1,7 +1,7 @@
 """Application configuration.
 
-Defines configuration class loaded by Flask at startup.
-SECRET_KEY is required in production for session signing and CSRF.
+Validates required settings at initialization time
+rather than at import time for cleaner error handling.
 """
 
 import os
@@ -10,18 +10,17 @@ import os
 class Config:
     """Flask configuration loaded via app.config.from_object()."""
 
-    # Cryptographically sign sessions and CSRF tokens.
-    # Must be set via environment variable - no default for safety.
-    SECRET_KEY: str = os.environ.get('SECRET_KEY')
-    if not SECRET_KEY:
-        raise RuntimeError('SECRET_KEY environment variable must be set for production.')
-
-    # Debug mode enables verbose error pages and hot-reload.
-    DEBUG: bool = os.environ.get('DEBUG', 'False').lower() == 'true'
-
-    # Flask environment (development / production).
-    ENV: str = os.environ.get('FLASK_ENV', 'production')
-
-    # Secure cookies: not accessible via JavaScript, sent on same-site requests.
+    SECRET_KEY: str = ''
+    DEBUG: bool = False
+    ENV: str = 'production'
     SESSION_COOKIE_HTTPONLY: bool = True
     SESSION_COOKIE_SAMESITE: str = 'Lax'
+
+    @classmethod
+    def validate(cls) -> None:
+        """Ensure required config values are present before the app starts."""
+        cls.SECRET_KEY = os.environ.get('SECRET_KEY', '')
+        if not cls.SECRET_KEY:
+            raise RuntimeError('SECRET_KEY environment variable must be set.')
+        cls.DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
+        cls.ENV = os.environ.get('FLASK_ENV', 'production')
