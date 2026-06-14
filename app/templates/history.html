@@ -7,6 +7,7 @@
         <h1 id="history-title">Your Calculation History</h1>
 
         {% if records %}
+        <!-- Scrollable table wrapper for responsive data display -->
         <div class="table-wrapper" role="region" aria-label="Calculation history table" tabindex="0">
             <table class="history-table">
                 <caption class="sr-only">List of your past carbon footprint calculations</caption>
@@ -23,6 +24,7 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <!-- Reverse order: most recent calculation first -->
                     {% for record in records | reverse %}
                     <tr>
                         <td>{{ record.timestamp[:16].replace('T', ' ') }}</td>
@@ -33,7 +35,9 @@
                         <td>{{ record.consumption | capitalize }}</td>
                         <td>{{ record.total }}</td>
                         <td>
-                            <span class="badge badge-{{ record.category }}">{{ record.category | replace('_', ' ') | capitalize }}</span>
+                            <span class="badge badge-{{ record.category }}">
+                                {{ record.category | replace('_', ' ') | capitalize }}
+                            </span>
                         </td>
                     </tr>
                     {% endfor %}
@@ -41,6 +45,7 @@
             </table>
         </div>
         {% else %}
+        <!-- Empty state shown when no calculations exist -->
         <div class="empty-state" role="status">
             <p>No calculations yet. <a href="{{ url_for('main.calculator') }}">Calculate your carbon footprint</a> to get started.</p>
         </div>

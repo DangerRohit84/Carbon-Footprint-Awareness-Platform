@@ -7,6 +7,7 @@
         <h1 id="tips-page-title">Tips &amp; Insights</h1>
         <p class="page-intro">Discover actionable ways to reduce your carbon footprint across all areas of your life.</p>
 
+        <!-- Iterate over all tip categories (transport, diet, energy, consumption) -->
         {% for category, category_tips in tips.items() %}
         <article class="tip-group" aria-labelledby="cat-{{ category }}">
             <h2 id="cat-{{ category }}">{{ category|capitalize }}</h2>

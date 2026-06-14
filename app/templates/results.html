@@ -6,6 +6,7 @@
     <div class="results-container">
         <h1 id="results-title">Your Carbon Footprint Results</h1>
 
+        <!-- Main result card: total + category message -->
         <div class="result-card category-{{ category }}" role="alert">
             <div class="result-main">
                 <span class="result-total" aria-label="{{ result.total }} tons CO2 equivalent per year">{{ result.total }}</span>
@@ -14,11 +15,13 @@
             <p class="result-message">{{ message }}</p>
         </div>
 
+        <!-- Comparison to global average (4.8 tons CO2e/year) -->
         <div class="comparison-card" aria-labelledby="comparison-title">
             <h2 id="comparison-title">Global Comparison</h2>
             <p>{{ comparison.message }}</p>
         </div>
 
+        <!-- Per-category breakdown with visual progress bars -->
         <div class="breakdown-section" aria-labelledby="breakdown-title">
             <h2 id="breakdown-title">Detailed Breakdown</h2>
             <div class="breakdown-grid" role="list">
@@ -28,14 +31,24 @@
                         <span class="breakdown-name">{{ category|capitalize }}</span>
                         <span class="breakdown-value">{{ value }} tons</span>
                     </div>
-                    <div class="progress-bar" role="progressbar" aria-valuenow="{% if result.total > 0 %}{{ (value / result.total * 100)|round }}{% else %}0{% endif %}" aria-valuemin="0" aria-valuemax="100" aria-label="{{ category }}: {{ value }} tons">
-                        <div class="progress-fill" style="width: {% if result.total > 0 %}{{ (value / result.total * 100)|round }}{% else %}0{% endif %}%"></div>
+                    <!--
+                      Progress bar: aria-valuenow uses percentage (value/total*100)
+                      so screen readers report the correct portion, not raw tonnage.
+                    -->
+                    <div class="progress-bar" role="progressbar"
+                         aria-valuenow="{% if result.total > 0 %}{{ (value / result.total * 100)|round }}{% else %}0{% endif %}"
+                         aria-valuemin="0" aria-valuemax="100"
+                         aria-label="{{ category }}: {{ value }} tons">
+                        <div class="progress-fill"
+                             style="width: {% if result.total > 0 %}{{ (value / result.total * 100)|round }}{% else %}0{% endif %}%">
+                        </div>
                     </div>
                 </div>
                 {% endfor %}
             </div>
         </div>
 
+        <!-- Personalized tips sorted by highest-impact category first -->
         {% if tips %}
         <section class="tips-section" aria-labelledby="tips-title">
             <h2 id="tips-title">Personalized Tips to Reduce Your Footprint</h2>
@@ -55,6 +68,7 @@
         </section>
         {% endif %}
 
+        <!-- Offset estimation: trees and forest area needed -->
         <div class="offset-card" aria-labelledby="offset-title">
             <h2 id="offset-title">Offset Your Footprint</h2>
             <p>To offset your annual carbon footprint, you would need approximately:</p>
@@ -64,6 +78,7 @@
             </ul>
         </div>
 
+        <!-- Navigation actions -->
         <div class="results-actions">
             <a href="{{ url_for('main.calculator') }}" class="btn btn-primary">Calculate Again</a>
             <a href="{{ url_for('main.tips') }}" class="btn btn-secondary">All Tips &amp; Insights</a>

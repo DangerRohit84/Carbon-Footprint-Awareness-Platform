@@ -1,8 +1,19 @@
+# Python bytecode and cache files
 __pycache__/
 *.py[cod]
+
+# Package build artifacts
 *.egg-info/
+
+# Environment variables (contains secrets)
 .env
+
+# Virtual environments (local only, not part of the project)
 venv/
 .venv/
+
+# Database files (if used in future)
 *.db
+
+# Flask instance folder (contains runtime data)
 .instance/

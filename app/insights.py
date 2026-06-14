@@ -1,4 +1,6 @@
-TIPS = {
+from typing import Dict, List, Any
+
+TIPS: Dict[str, List[Dict[str, Any]]] = {
     'transport': [
         {'tip': 'Consider walking or cycling for short trips - zero emissions and great exercise!', 'saving': 0.3},
         {'tip': 'Use public transport instead of a car whenever possible.', 'saving': 0.6},
@@ -36,7 +38,7 @@ TIPS = {
     ],
 }
 
-CATEGORY_MESSAGES = {
+CATEGORY_MESSAGES: Dict[str, str] = {
     'excellent': 'Outstanding! Your carbon footprint is exceptionally low. You are a true environmental steward!',
     'good': 'Great job! Your carbon footprint is below average. Keep up the sustainable habits!',
     'average': 'Your carbon footprint is around the global average. There is room for improvement in every category.',
@@ -45,13 +47,13 @@ CATEGORY_MESSAGES = {
 }
 
 
-def get_personalized_tips(breakdown):
-    tips = []
+def get_personalized_tips(breakdown: Dict[str, float]) -> List[Dict[str, Any]]:
+    tips: List[Dict[str, Any]] = []
     sorted_categories = sorted(breakdown.items(), key=lambda x: x[1], reverse=True)
 
     for category, value in sorted_categories:
         if value > 0:
-            category_tips = TIPS.get(category, [])
+            category_tips: List[Dict[str, Any]] = TIPS.get(category, [])
             tips.append({
                 'category': category,
                 'value': value,
@@ -61,11 +63,11 @@ def get_personalized_tips(breakdown):
     return tips
 
 
-def get_global_comparison(total):
-    global_average = 4.8
+def get_global_comparison(total: float) -> Dict[str, str]:
+    global_average: float = 4.8
     if total < global_average * 0.5:
-        comparison = 'significantly_below'
-        message = 'Your footprint is significantly below the global average of 4.8 tons CO2e per year.'
+        comparison: str = 'significantly_below'
+        message: str = 'Your footprint is significantly below the global average of 4.8 tons CO2e per year.'
     elif total < global_average:
         comparison = 'below'
         message = 'Your footprint is below the global average of 4.8 tons CO2e per year.'
@@ -79,7 +81,7 @@ def get_global_comparison(total):
     return {'comparison': comparison, 'message': message}
 
 
-def estimate_forest_offset(total):
-    trees_needed = round(total * 5)
-    hectares_needed = round(total * 0.02, 2)
+def estimate_forest_offset(total: float) -> Dict[str, Any]:
+    trees_needed: int = round(total * 5)
+    hectares_needed: float = round(total * 0.02, 2)
     return {'trees': trees_needed, 'hectares': hectares_needed}
