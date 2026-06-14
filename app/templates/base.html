@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Carbon Footprint Awareness Platform - Track and reduce your carbon footprint">
+    <title>{% block title %}EcoTrack{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header class="site-header" role="banner">
+        <nav class="nav-container" role="navigation" aria-label="Main navigation">
+            <a href="{{ url_for('main.index') }}" class="logo" aria-label="EcoTrack Home">
+                <span aria-hidden="true">&#127807;</span> EcoTrack
+            </a>
+            <button class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false" id="nav-toggle">
+                <span class="hamburger"></span>
+            </button>
+            <ul class="nav-links" id="nav-links" role="menubar">
+                <li role="none"><a href="{{ url_for('main.index') }}" role="menuitem">Home</a></li>
+                <li role="none"><a href="{{ url_for('main.calculator') }}" role="menuitem">Calculator</a></li>
+                <li role="none"><a href="{{ url_for('main.tips') }}" role="menuitem">Tips</a></li>
+                <li role="none"><a href="{{ url_for('main.history') }}" role="menuitem">History</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main id="main-content" role="main">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer" role="contentinfo">
+        <div class="footer-content">
+            <p>&copy; 2026 EcoTrack &mdash; Carbon Footprint Awareness Platform</p>
+            <nav aria-label="Footer navigation">
+                <a href="{{ url_for('main.calculator') }}">Calculate Your Footprint</a>
+                <a href="{{ url_for('main.tips') }}">Tips &amp; Insights</a>
+            </nav>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+</body>
+</html>

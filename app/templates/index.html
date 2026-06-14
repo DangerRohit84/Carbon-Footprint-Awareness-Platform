@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}EcoTrack - Carbon Footprint Awareness{% endblock %}
+
+{% block content %}
+<section class="hero" aria-labelledby="hero-title">
+    <div class="hero-content">
+        <h1 id="hero-title">Understand Your Carbon Footprint</h1>
+        <p>Track, analyze, and reduce your environmental impact with personalized insights and actionable tips.</p>
+        <a href="{{ url_for('main.calculator') }}" class="btn btn-primary btn-lg">Calculate Your Footprint</a>
+    </div>
+</section>
+
+<section class="features" aria-labelledby="features-title">
+    <h2 id="features-title" class="section-title">How It Works</h2>
+    <div class="features-grid">
+        <article class="feature-card" aria-labelledby="feature-1">
+            <div class="feature-icon" aria-hidden="true">&#128200;</div>
+            <h3 id="feature-1">Calculate</h3>
+            <p>Answer a few questions about your lifestyle &mdash; transport, diet, energy, and consumption habits.</p>
+        </article>
+        <article class="feature-card" aria-labelledby="feature-2">
+            <div class="feature-icon" aria-hidden="true">&#128202;</div>
+            <h3 id="feature-2">Analyze</h3>
+            <p>Get a detailed breakdown of your carbon footprint and see how you compare to global averages.</p>
+        </article>
+        <article class="feature-card" aria-labelledby="feature-3">
+            <div class="feature-icon" aria-hidden="true">&#127793;</div>
+            <h3 id="feature-3">Reduce</h3>
+            <p>Receive personalized tips to lower your impact and track your progress over time.</p>
+        </article>
+    </div>
+</section>
+
+<section class="stats-section" aria-labelledby="stats-title">
+    <h2 id="stats-title" class="sr-only">Carbon Footprint Facts</h2>
+    <div class="stats-grid">
+        <div class="stat">
+            <span class="stat-number" aria-hidden="true">4.8</span>
+            <span class="stat-label">Global average<br>tons CO2e/year</span>
+        </div>
+        <div class="stat">
+            <span class="stat-number" aria-hidden="true">20%</span>
+            <span class="stat-label">Reduction possible<br>with simple changes</span>
+        </div>
+        <div class="stat">
+            <span class="stat-number" aria-hidden="true">2B</span>
+            <span class="stat-label">Trees needed<br>to offset global emissions</span>
+        </div>
+        <div class="stat">
+            <span class="stat-number" aria-hidden="true">60%</span>
+            <span class="stat-label">Of emissions come<br>from just 5 categories</span>
+        </div>
+    </div>
+</section>
+
+<section class="cta-section" aria-labelledby="cta-title">
+    <h2 id="cta-title">Ready to Make a Difference?</h2>
+    <p>Start your journey toward a sustainable lifestyle today.</p>
+    <a href="{{ url_for('main.calculator') }}" class="btn btn-secondary btn-lg">Get Started Now</a>
+</section>
+{% endblock %}

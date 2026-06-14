@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}EcoTrack - Carbon Footprint Calculator{% endblock %}
+
+{% block content %}
+<section class="form-section" aria-labelledby="form-title">
+    <div class="form-container">
+        <h1 id="form-title">Carbon Footprint Calculator</h1>
+        <p class="form-intro">Answer these simple questions to estimate your annual carbon footprint.</p>
+
+        {% if errors %}
+        <div class="error-summary" role="alert" aria-labelledby="error-heading">
+            <h2 id="error-heading" class="sr-only">Errors</h2>
+            <ul>
+                {% for error in errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <form method="POST" action="{{ url_for('main.calculate') }}" novalidate>
+            <fieldset class="form-fieldset">
+                <legend class="fieldset-title">Transport</legend>
+
+                <div class="form-group">
+                    <label for="transport_type">Primary mode of transport</label>
+                    <select id="transport_type" name="transport_type" required aria-describedby="transport-hint">
+                        <option value="" disabled {% if not data %}selected{% endif %}>Select transport mode...</option>
+                        <option value="walk" {% if data and data.transport_type == 'walk' %}selected{% endif %}>Walking</option>
+                        <option value="bicycle" {% if data and data.transport_type == 'bicycle' %}selected{% endif %}>Bicycle</option>
+                        <option value="bus" {% if data and data.transport_type == 'bus' %}selected{% endif %}>Bus</option>
+                        <option value="train" {% if data and data.transport_type == 'train' %}selected{% endif %}>Train</option>
+                        <option value="ev" {% if data and data.transport_type == 'ev' %}selected{% endif %}>Electric Vehicle</option>
+                        <option value="car" {% if data and data.transport_type == 'car' %}selected{% endif %}>Car (petrol/diesel)</option>
+                        <option value="motorcycle" {% if data and data.transport_type == 'motorcycle' %}selected{% endif %}>Motorcycle</option>
+                    </select>
+                    <span id="transport-hint" class="form-hint">Choose your most frequently used transport mode.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="transport_distance">Weekly travel distance (km)</label>
+                    <input type="number" id="transport_distance" name="transport_distance"
+                           min="0" max="1000" step="1"
+                           value="{{ data.transport_distance if data else '' }}"
+                           required aria-describedby="distance-hint">
+                    <span id="distance-hint" class="form-hint">How many kilometers do you travel per week using this mode?</span>
+                </div>
+            </fieldset>
+
+            <fieldset class="form-fieldset">
+                <legend class="fieldset-title">Diet</legend>
+
+                <div class="form-group">
+                    <label for="diet">Dietary preference</label>
+                    <select id="diet" name="diet" required>
+                        <option value="" disabled {% if not data %}selected{% endif %}>Select diet type...</option>
+                        <option value="vegan" {% if data and data.diet == 'vegan' %}selected{% endif %}>Vegan</option>
+                        <option value="vegetarian" {% if data and data.diet == 'vegetarian' %}selected{% endif %}>Vegetarian</option>
+                        <option value="pescatarian" {% if data and data.diet == 'pescatarian' %}selected{% endif %}>Pescatarian</option>
+                        <option value="omnivore_low" {% if data and data.diet == 'omnivore_low' %}selected{% endif %}>Omnivore (low meat)</option>
+                        <option value="omnivore_medium" {% if data and data.diet == 'omnivore_medium' %}selected{% endif %}>Omnivore (moderate meat)</option>
+                        <option value="omnivore_high" {% if data and data.diet == 'omnivore_high' %}selected{% endif %}>Omnivore (high meat)</option>
+                    </select>
+                </div>
+            </fieldset>
+
+            <fieldset class="form-fieldset">
+                <legend class="fieldset-title">Home Energy</legend>
+
+                <div class="form-group">
+                    <label for="energy">Home energy source</label>
+                    <select id="energy" name="energy" required>
+                        <option value="" disabled {% if not data %}selected{% endif %}>Select energy source...</option>
+                        <option value="renewable" {% if data and data.energy == 'renewable' %}selected{% endif %}>100% Renewable</option>
+                        <option value="mixed" {% if data and data.energy == 'mixed' %}selected{% endif %}>Mixed (grid)</option>
+                        <option value="fossil" {% if data and data.energy == 'fossil' %}selected{% endif %}>Fossil fuels</option>
+                    </select>
+                </div>
+            </fieldset>
+
+            <fieldset class="form-fieldset">
+                <legend class="fieldset-title">Consumption Habits</legend>
+
+                <div class="form-group">
+                    <label for="consumption">Overall consumption level</label>
+                    <select id="consumption" name="consumption" required>
+                        <option value="" disabled {% if not data %}selected{% endif %}>Select consumption level...</option>
+                        <option value="minimalist" {% if data and data.consumption == 'minimalist' %}selected{% endif %}>Minimalist (buy very little)</option>
+                        <option value="moderate" {% if data and data.consumption == 'moderate' %}selected{% endif %}>Moderate (buy what you need)</option>
+                        <option value="high" {% if data and data.consumption == 'high' %}selected{% endif %}>High (regular new purchases)</option>
+                        <option value="excessive" {% if data and data.consumption == 'excessive' %}selected{% endif %}>Excessive (frequent buying)</option>
+                    </select>
+                </div>
+            </fieldset>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Calculate My Footprint</button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

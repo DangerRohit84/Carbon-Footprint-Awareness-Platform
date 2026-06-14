@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}EcoTrack - Tips & Insights{% endblock %}
+
+{% block content %}
+<section class="tips-page" aria-labelledby="tips-page-title">
+    <div class="tips-container">
+        <h1 id="tips-page-title">Tips &amp; Insights</h1>
+        <p class="page-intro">Discover actionable ways to reduce your carbon footprint across all areas of your life.</p>
+
+        {% for category, category_tips in tips.items() %}
+        <article class="tip-group" aria-labelledby="cat-{{ category }}">
+            <h2 id="cat-{{ category }}">{{ category|capitalize }}</h2>
+            <ul class="tip-list">
+                {% for tip_item in category_tips %}
+                <li class="tip-item">
+                    <span class="tip-text">{{ tip_item.tip }}</span>
+                    <span class="tip-saving">Potential saving: <strong>{{ tip_item.saving }} tons CO2e/year</strong></span>
+                </li>
+                {% endfor %}
+            </ul>
+        </article>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
