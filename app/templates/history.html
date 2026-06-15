@@ -7,7 +7,19 @@
         <h1 id="history-title">Your Calculation History</h1>
 
         {% if records %}
-        <!-- Scrollable table wrapper for responsive data display -->
+        {% if trends.has_trend %}
+        <div class="trend-card" role="status" aria-live="polite">
+            <span class="trend-icon" aria-hidden="true">
+                {% if trends.direction == 'down' %}&#9660;{% elif trends.direction == 'up' %}&#9650;{% else %}&#9644;{% endif %}
+            </span>
+            <span>
+                Your carbon footprint has
+                <strong>{% if trends.direction == 'down' %}decreased{% elif trends.direction == 'up' %}increased{% else %}stayed the same{% endif %}</strong>
+                by <strong>{{ trends.change }} tons CO2e</strong> since your first calculation.
+            </span>
+        </div>
+        {% endif %}
+
         <div class="table-wrapper" role="region" aria-label="Calculation history table" tabindex="0">
             <table class="history-table">
                 <caption class="sr-only">List of your past carbon footprint calculations</caption>
@@ -15,25 +27,24 @@
                     <tr>
                         <th scope="col">Date &amp; Time</th>
                         <th scope="col">Transport</th>
-                        <th scope="col">Distance (km/wk)</th>
+                        <th scope="col">Distance</th>
                         <th scope="col">Diet</th>
                         <th scope="col">Energy</th>
                         <th scope="col">Consumption</th>
-                        <th scope="col">Total (tons CO2e)</th>
+                        <th scope="col">Total</th>
                         <th scope="col">Category</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Reverse order: most recent calculation first -->
                     {% for record in records | reverse %}
                     <tr>
                         <td>{{ record.timestamp[:16].replace('T', ' ') }}</td>
                         <td>{{ record.transport_type | capitalize }}</td>
-                        <td>{{ record.transport_distance }}</td>
+                        <td>{{ record.transport_distance }} km</td>
                         <td>{{ record.diet | replace('_', ' ') | capitalize }}</td>
                         <td>{{ record.energy | capitalize }}</td>
                         <td>{{ record.consumption | capitalize }}</td>
-                        <td>{{ record.total }}</td>
+                        <td><strong>{{ record.total }}</strong></td>
                         <td>
                             <span class="badge badge-{{ record.category }}">
                                 {{ record.category | replace('_', ' ') | capitalize }}
@@ -44,16 +55,20 @@
                 </tbody>
             </table>
         </div>
+
+        <div class="history-actions">
+            <a href="{{ url_for('main.calculator') }}" class="btn btn-primary">New Calculation</a>
+            <a href="{{ url_for('main.history_export') }}" class="btn btn-secondary">Export CSV</a>
+        </div>
         {% else %}
-        <!-- Empty state shown when no calculations exist -->
         <div class="empty-state" role="status">
             <p>No calculations yet. <a href="{{ url_for('main.calculator') }}">Calculate your carbon footprint</a> to get started.</p>
         </div>
-        {% endif %}
 
         <div class="history-actions">
             <a href="{{ url_for('main.calculator') }}" class="btn btn-primary">New Calculation</a>
         </div>
+        {% endif %}
     </div>
 </section>
 {% endblock %}
