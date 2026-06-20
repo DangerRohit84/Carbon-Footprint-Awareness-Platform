@@ -3,14 +3,14 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(
+    0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')),
+)
 
 import pytest
 from app import create_app
-from app.models import FootprintRecord, DATA_FILE
+from app.models import DATA_FILE, FootprintRecord
 
-
-# Ensure SECRET_KEY is set before any app or config import
 os.environ.setdefault('SECRET_KEY', 'test-secret-key')
 os.environ.setdefault('FLASK_ENV', 'testing')
 

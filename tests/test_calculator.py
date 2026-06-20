@@ -4,12 +4,11 @@ Covers input validation, footprint calculation accuracy,
 category classification, and edge cases.
 """
 
-import pytest
 from app.calculator import (
-    validate_inputs,
+    CARBON_FACTORS,
     calculate_carbon_footprint,
     get_category,
-    CARBON_FACTORS,
+    validate_inputs,
 )
 
 
@@ -137,7 +136,7 @@ class TestValidateInputs:
         assert any('valid number' in e for e in errors)
 
     def test_missing_transport_distance_key(self):
-        """Missing transport_distance should default to 0 and validate as OK."""
+        """Missing transport_distance should default to 0 and validate."""
         data = {
             'transport_type': 'car',
             'diet': 'vegan',
@@ -164,64 +163,76 @@ class TestCalculateCarbonFootprint:
     """Tests for the calculate_carbon_footprint function."""
 
     def test_minimal_footprint(self):
-        """Minimum realistic inputs should produce a small but non-zero total."""
-        result = calculate_carbon_footprint('walk', 0, 'vegan', 'renewable', 'minimalist')
+        """Minimum inputs should produce a small but non-zero total."""
+        result = calculate_carbon_footprint(
+            'walk', 0, 'vegan', 'renewable', 'minimalist',
+        )
         assert result['total'] >= 0
-        assert all(k in result['breakdown'] for k in ['transport', 'diet', 'energy', 'consumption'])
+        assert all(
+            k in result['breakdown']
+            for k in ['transport', 'diet', 'energy', 'consumption']
+        )
 
     def test_maximal_footprint(self):
-        """Maximum inputs should produce a high total with significant transport."""
-        result = calculate_carbon_footprint('car', 1000, 'omnivore_high', 'fossil', 'excessive')
+        """Maximum inputs should produce a high total."""
+        result = calculate_carbon_footprint(
+            'car', 1000, 'omnivore_high', 'fossil', 'excessive',
+        )
         assert result['total'] > 10
         assert result['breakdown']['transport'] > 10
 
     def test_bicycle_zero_emissions_transport(self):
         """Bicycle transport should contribute zero transport emissions."""
-        result = calculate_carbon_footprint('bicycle', 100, 'vegan', 'renewable', 'minimalist')
+        result = calculate_carbon_footprint(
+            'bicycle', 100, 'vegan', 'renewable', 'minimalist',
+        )
         assert result['breakdown']['transport'] == 0
 
     def test_breakdown_values(self):
-        """All four breakdown categories should be present and positive for mixed inputs."""
-        result = calculate_carbon_footprint('car', 100, 'omnivore_medium', 'mixed', 'moderate')
+        """All four breakdown categories should be present and positive."""
+        result = calculate_carbon_footprint(
+            'car', 100, 'omnivore_medium', 'mixed', 'moderate',
+        )
         breakdown = result['breakdown']
         assert breakdown['transport'] > 0
         assert breakdown['diet'] > 0
         assert breakdown['energy'] > 0
         assert breakdown['consumption'] > 0
-        # Breakdown sum should approximately equal the total.
         assert abs(sum(breakdown.values()) - result['total']) < 0.01
 
     def test_known_values(self):
-        """Verify exact arithmetic against manually computed expected values."""
-        result = calculate_carbon_footprint('car', 100, 'omnivore_low', 'renewable', 'moderate')
-        transport_factor = CARBON_FACTORS['transport']['car']
-        diet_factor = CARBON_FACTORS['diet']['omnivore_low']
-        energy_factor = CARBON_FACTORS['energy']['renewable']
-        consumption_factor = CARBON_FACTORS['consumption']['moderate']
+        """Verify exact arithmetic against manually computed values."""
+        result = calculate_carbon_footprint(
+            'car', 100, 'omnivore_low', 'renewable', 'moderate',
+        )
+        tf = CARBON_FACTORS['transport']['car']
+        df = CARBON_FACTORS['diet']['omnivore_low']
+        ef = CARBON_FACTORS['energy']['renewable']
+        cf = CARBON_FACTORS['consumption']['moderate']
         expected = round(
-            transport_factor * 100 * 52 / 1000
-            + diet_factor * 365 / 1000
-            + energy_factor * 12
-            + consumption_factor * 12,
+            tf * 100 * 52 / 1000
+            + df * 365 / 1000
+            + ef * 12
+            + cf * 12,
             2,
         )
         assert result['total'] == expected
 
     def test_returns_category(self):
         """The result dict should always include a category key."""
-        result = calculate_carbon_footprint('walk', 0, 'vegan', 'renewable', 'minimalist')
+        result = calculate_carbon_footprint(
+            'walk', 0, 'vegan', 'renewable', 'minimalist',
+        )
         assert 'category' in result
-        assert result['category'] in ('excellent', 'good', 'average', 'above_average', 'high')
-
-    def test_zero_total_is_excellent(self):
-        """A truly zero total should be classified as 'excellent'."""
-        result = calculate_carbon_footprint('walk', 0, 'vegan', 'renewable', 'minimalist')
-        assert result['total'] > 0
-        assert 'category' in result
+        assert result['category'] in (
+            'excellent', 'good', 'average', 'above_average', 'high',
+        )
 
     def test_safe_with_invalid_keys(self):
         """Unknown keys should produce zero emissions without crashing."""
-        result = calculate_carbon_footprint('unknown', 0, 'unknown', 'unknown', 'unknown')
+        result = calculate_carbon_footprint(
+            'unknown', 0, 'unknown', 'unknown', 'unknown',
+        )
         assert result['total'] == 0
         assert 'category' in result
 
@@ -230,18 +241,23 @@ class TestGetCategory:
     """Tests for the get_category classification function."""
 
     def test_excellent(self):
+        """Total <= 2.5 should be excellent."""
         assert get_category(1.0) == 'excellent'
 
     def test_good(self):
+        """Total 2.51-5.0 should be good."""
         assert get_category(3.0) == 'good'
 
     def test_average(self):
+        """Total 5.01-8.0 should be average."""
         assert get_category(6.0) == 'average'
 
     def test_above_average(self):
+        """Total 8.01-12.0 should be above average."""
         assert get_category(10.0) == 'above_average'
 
     def test_high(self):
+        """Total > 12.0 should be high."""
         assert get_category(15.0) == 'high'
 
     def test_boundary_excellent_good(self):

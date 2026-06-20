@@ -6,6 +6,8 @@ rather than at import time for cleaner error handling.
 
 import os
 
+__all__ = ['Config']
+
 
 class Config:
     """Flask configuration loaded via app.config.from_object()."""
@@ -18,9 +20,11 @@ class Config:
 
     @classmethod
     def validate(cls) -> None:
-        """Ensure required config values are present before the app starts."""
+        """Check required config values before the app starts."""
         cls.SECRET_KEY = os.environ.get('SECRET_KEY', '')
         if not cls.SECRET_KEY:
-            raise RuntimeError('SECRET_KEY environment variable must be set.')
+            raise RuntimeError(
+                'SECRET_KEY environment variable must be set.'
+            )
         cls.DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
         cls.ENV = os.environ.get('FLASK_ENV', 'production')
