@@ -1,3 +1,9 @@
+"""Route definitions for the EcoTrack web application.
+
+Handles all HTTP endpoints including the main pages, form submission,
+REST API, history display, and CSV export.
+"""
+
 from flask import Blueprint, render_template, request, jsonify, Response
 from app.calculator import validate_inputs, calculate_carbon_footprint
 from app.insights import get_personalized_tips, get_global_comparison, estimate_forest_offset, CATEGORY_MESSAGES, TIPS
@@ -9,12 +15,8 @@ from typing import Dict, Any, Tuple
 bp = Blueprint('main', __name__)
 
 
-@bp.context_processor
-def inject_csrf() -> Dict[str, str]:
-    return {'csrf_token': get_csrf_token()}
-
-
 def _process_inputs(data: Dict[str, Any]) -> Tuple[str, float, str, str, str]:
+    """Extract and normalize form/JSON input fields."""
     transport_type: str = data.get('transport_type', '').strip().lower()
     transport_distance: float = float(data.get('transport_distance', 0))
     diet: str = data.get('diet', '').strip().lower()
@@ -24,6 +26,7 @@ def _process_inputs(data: Dict[str, Any]) -> Tuple[str, float, str, str, str]:
 
 
 def _build_result_data(result: Dict[str, Any], transport_distance: float, data: Dict[str, Any]) -> Dict[str, Any]:
+    """Persist the calculation and build the template/API result payload."""
     record = FootprintRecord(data, result, transport_distance)
     FootprintRecord.save(record)
     return {
@@ -100,6 +103,7 @@ def history_export() -> Response:
 
 
 def _compute_trends(records: list) -> Dict[str, Any]:
+    """Calculate the direction and magnitude of change between first and last record."""
     if len(records) < 2:
         return {'has_trend': False, 'direction': '', 'change': 0}
     first = records[0]['total']

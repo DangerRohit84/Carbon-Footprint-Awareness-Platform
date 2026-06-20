@@ -1,3 +1,9 @@
+"""Insights engine for personalized recommendations.
+
+Provides carbon footprint analysis including reduction tips,
+global average comparison, and forest offset estimation.
+"""
+
 from typing import Dict, List, Any
 
 TIPS: Dict[str, List[Dict[str, Any]]] = {
@@ -48,6 +54,7 @@ CATEGORY_MESSAGES: Dict[str, str] = {
 
 
 def get_personalized_tips(breakdown: Dict[str, float]) -> List[Dict[str, Any]]:
+    """Return up to 3 reduction tips per category, sorted by highest impact first."""
     tips: List[Dict[str, Any]] = []
     sorted_categories = sorted(breakdown.items(), key=lambda x: x[1], reverse=True)
 
@@ -64,6 +71,7 @@ def get_personalized_tips(breakdown: Dict[str, float]) -> List[Dict[str, Any]]:
 
 
 def get_global_comparison(total: float) -> Dict[str, str]:
+    """Compare the user's footprint to the global average of 4.8 tons CO2e/year."""
     global_average: float = 4.8
     if total < global_average * 0.5:
         comparison: str = 'significantly_below'
@@ -82,6 +90,7 @@ def get_global_comparison(total: float) -> Dict[str, str]:
 
 
 def estimate_forest_offset(total: float) -> Dict[str, Any]:
+    """Estimate trees and forest area needed to offset the user's annual footprint."""
     trees_needed: int = round(total * 5)
     hectares_needed: float = round(total * 0.02, 2)
     return {'trees': trees_needed, 'hectares': hectares_needed}

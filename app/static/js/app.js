@@ -45,14 +45,19 @@
       var valid = true;
       var firstInvalid = null;
 
+      // Reset all aria-invalid states first.
+      requiredFields.forEach(function (field) {
+        field.setAttribute('aria-invalid', 'false');
+        field.style.borderColor = '';
+      });
+
       // Check every required field has a value.
       requiredFields.forEach(function (field) {
         if (!field.value) {
-          field.style.borderColor = '#d32f2f';  // Red border for error
+          field.setAttribute('aria-invalid', 'true');
+          field.style.borderColor = '#d32f2f';
           valid = false;
           if (!firstInvalid) firstInvalid = field;
-        } else {
-          field.style.borderColor = '';  // Reset on valid input
         }
       });
 
@@ -66,7 +71,8 @@
           var summary = document.createElement('div');
           summary.className = 'error-summary';
           summary.setAttribute('role', 'alert');
-          summary.innerHTML = '<ul><li>Please fill in all required fields.</li></ul>';
+          summary.setAttribute('aria-labelledby', 'client-error-heading');
+          summary.innerHTML = '<h2 id="client-error-heading" class="sr-only">Form Errors</h2><ul><li>Please fill in all required fields.</li></ul>';
           form.insertBefore(summary, form.firstChild);
         }
       }
